@@ -3,13 +3,31 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: JanVoice AI - Civic Engagement Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: campaigns
+    description: Campaign management
+  - name: petitions
+    description: Petition signing
+  - name: polls
+    description: Opinion polls
+  - name: comments
+    description: Community discussions
+  - name: notifications
+    description: User notifications
+  - name: ai
+    description: AI-powered features
+  - name: stats
+    description: Platform statistics
+  - name: users
+    description: User profile management
 paths:
   /healthz:
     get:
@@ -24,6 +42,720 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── AUTH ──────────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "409":
+          description: Email already in use
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current user
+      responses:
+        "200":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+
+  /auth/me/profile:
+    patch:
+      operationId: updateProfile
+      tags: [auth]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # ── CAMPAIGNS ─────────────────────────────────────────────────────────────
+  /campaigns:
+    get:
+      operationId: listCampaigns
+      tags: [campaigns]
+      summary: List all campaigns
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignList"
+    post:
+      operationId: createCampaign
+      tags: [campaigns]
+      summary: Create a new campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignInput"
+      responses:
+        "201":
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+  /campaigns/featured:
+    get:
+      operationId: getFeaturedCampaigns
+      tags: [campaigns]
+      summary: Get featured and trending campaigns
+      responses:
+        "200":
+          description: Featured campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Campaign"
+
+  /campaigns/{id}:
+    get:
+      operationId: getCampaign
+      tags: [campaigns]
+      summary: Get campaign by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Campaign details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCampaign
+      tags: [campaigns]
+      summary: Update a campaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignUpdate"
+      responses:
+        "200":
+          description: Updated campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+  /campaigns/{id}/join:
+    post:
+      operationId: joinCampaign
+      tags: [campaigns]
+      summary: Join a campaign as a supporter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Joined successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+
+  /campaigns/{id}/bookmark:
+    post:
+      operationId: bookmarkCampaign
+      tags: [campaigns]
+      summary: Bookmark or unbookmark a campaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bookmark toggled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+
+  /campaigns/{id}/updates:
+    get:
+      operationId: getCampaignUpdates
+      tags: [campaigns]
+      summary: Get updates for a campaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Campaign updates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CampaignUpdate2"
+    post:
+      operationId: postCampaignUpdate
+      tags: [campaigns]
+      summary: Post an update to a campaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignUpdateInput"
+      responses:
+        "201":
+          description: Update posted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignUpdate2"
+
+  # ── PETITIONS ─────────────────────────────────────────────────────────────
+  /petitions:
+    get:
+      operationId: listPetitions
+      tags: [petitions]
+      summary: List petitions
+      parameters:
+        - name: campaignId
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of petitions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetitionList"
+    post:
+      operationId: createPetition
+      tags: [petitions]
+      summary: Create a petition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PetitionInput"
+      responses:
+        "201":
+          description: Petition created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Petition"
+
+  /petitions/{id}:
+    get:
+      operationId: getPetition
+      tags: [petitions]
+      summary: Get petition by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Petition details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Petition"
+
+  /petitions/{id}/sign:
+    post:
+      operationId: signPetition
+      tags: [petitions]
+      summary: Sign a petition
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignatureInput"
+      responses:
+        "200":
+          description: Signed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+
+  # ── POLLS ─────────────────────────────────────────────────────────────────
+  /polls:
+    get:
+      operationId: listPolls
+      tags: [polls]
+      summary: List polls
+      parameters:
+        - name: campaignId
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of polls
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PollList"
+    post:
+      operationId: createPoll
+      tags: [polls]
+      summary: Create a poll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PollInput"
+      responses:
+        "201":
+          description: Poll created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Poll"
+
+  /polls/{id}:
+    get:
+      operationId: getPoll
+      tags: [polls]
+      summary: Get poll by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Poll details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Poll"
+
+  /polls/{id}/vote:
+    post:
+      operationId: votePoll
+      tags: [polls]
+      summary: Vote on a poll option
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VoteInput"
+      responses:
+        "200":
+          description: Vote recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Poll"
+
+  # ── COMMENTS ──────────────────────────────────────────────────────────────
+  /comments:
+    get:
+      operationId: listComments
+      tags: [comments]
+      summary: List comments for a campaign or petition
+      parameters:
+        - name: campaignId
+          in: query
+          schema:
+            type: integer
+        - name: petitionId
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentList"
+    post:
+      operationId: createComment
+      tags: [comments]
+      summary: Post a comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentInput"
+      responses:
+        "201":
+          description: Comment posted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+
+  /comments/{id}/upvote:
+    post:
+      operationId: upvoteComment
+      tags: [comments]
+      summary: Upvote a comment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Upvote toggled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+
+  # ── NOTIFICATIONS ─────────────────────────────────────────────────────────
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: Get user notifications
+      parameters:
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/read-all:
+    post:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      summary: Mark all notifications as read
+      responses:
+        "200":
+          description: All marked read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+
+  /notifications/{id}/read:
+    post:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark a notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Marked read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+
+  # ── AI ────────────────────────────────────────────────────────────────────
+  /ai/generate-email:
+    post:
+      operationId: generateEmail
+      tags: [ai]
+      summary: Generate AI-drafted email based on user concern
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailGenerateInput"
+      responses:
+        "200":
+          description: Generated email draft
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDraft"
+
+  /ai/generate-letter:
+    post:
+      operationId: generateLetter
+      tags: [ai]
+      summary: Generate official letter in chosen language
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LetterGenerateInput"
+      responses:
+        "200":
+          description: Generated letter draft
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LetterDraft"
+
+  /ai/summarize:
+    post:
+      operationId: summarizeCampaign
+      tags: [ai]
+      summary: Generate AI summary of a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SummarizeInput"
+      responses:
+        "200":
+          description: AI summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummaryResult"
+
+  # ── STATS ─────────────────────────────────────────────────────────────────
+  /stats/platform:
+    get:
+      operationId: getPlatformStats
+      tags: [stats]
+      summary: Get overall platform statistics
+      responses:
+        "200":
+          description: Platform statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+  /stats/dashboard:
+    get:
+      operationId: getDashboardStats
+      tags: [stats]
+      summary: Get authenticated user dashboard statistics
+      responses:
+        "200":
+          description: User dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /stats/activity:
+    get:
+      operationId: getRecentActivity
+      tags: [stats]
+      summary: Get recent activity feed for the user
+      responses:
+        "200":
+          description: Recent activity items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  # ── USERS ─────────────────────────────────────────────────────────────────
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get public user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Public user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicUser"
+
+  /users/me/campaigns:
+    get:
+      operationId: getMyCampaigns
+      tags: [users]
+      summary: Get campaigns joined or created by the current user
+      responses:
+        "200":
+          description: User campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Campaign"
+
+  /users/me/bookmarks:
+    get:
+      operationId: getMyBookmarks
+      tags: [users]
+      summary: Get bookmarked campaigns for current user
+      responses:
+        "200":
+          description: Bookmarked campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Campaign"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +766,610 @@ components:
       required:
         - status
 
+    # ── AUTH SCHEMAS ─────────────────────────────────────────────────────
+    RegisterInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          minLength: 2
+        email:
+          type: string
+        password:
+          type: string
+          minLength: 8
+        state:
+          type: string
+        city:
+          type: string
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [user, token]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+
+    User:
+      type: object
+      required: [id, name, email, role, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [guest, citizen, volunteer, moderator, admin, super_admin]
+        avatarUrl:
+          type: ["string", "null"]
+        state:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    PublicUser:
+      type: object
+      required: [id, name, role, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        state:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    ProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        avatarUrl:
+          type: string
+
+    # ── CAMPAIGN SCHEMAS ─────────────────────────────────────────────────
+    Campaign:
+      type: object
+      required: [id, title, description, category, status, supporterCount, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [education, infrastructure, healthcare, environment, public_services, women_safety, youth, other]
+        status:
+          type: string
+          enum: [active, completed, pending, archived]
+        imageUrl:
+          type: ["string", "null"]
+        supporterCount:
+          type: integer
+        signatureCount:
+          type: integer
+        targetSignatures:
+          type: ["integer", "null"]
+        progressPercent:
+          type: integer
+        isBookmarked:
+          type: boolean
+        isJoined:
+          type: boolean
+        location:
+          type: ["string", "null"]
+        tags:
+          type: array
+          items:
+            type: string
+        creatorId:
+          type: integer
+        creatorName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: ["string", "null"]
+
+    CampaignList:
+      type: object
+      required: [campaigns, total, page, limit]
+      properties:
+        campaigns:
+          type: array
+          items:
+            $ref: "#/components/schemas/Campaign"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    CampaignInput:
+      type: object
+      required: [title, description, category]
+      properties:
+        title:
+          type: string
+          minLength: 5
+        description:
+          type: string
+          minLength: 20
+        category:
+          type: string
+        imageUrl:
+          type: string
+        location:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        targetSignatures:
+          type: integer
+        endsAt:
+          type: string
+          format: date-time
+
+    CampaignUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        imageUrl:
+          type: string
+        location:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    CampaignUpdate2:
+      type: object
+      required: [id, campaignId, title, content, createdAt]
+      properties:
+        id:
+          type: integer
+        campaignId:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CampaignUpdateInput:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+
+    # ── PETITION SCHEMAS ─────────────────────────────────────────────────
+    Petition:
+      type: object
+      required: [id, title, description, signatureCount, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        campaignId:
+          type: ["integer", "null"]
+        signatureCount:
+          type: integer
+        targetSignatures:
+          type: ["integer", "null"]
+        progressPercent:
+          type: integer
+        isSigned:
+          type: boolean
+        creatorName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    PetitionList:
+      type: object
+      required: [petitions, total, page]
+      properties:
+        petitions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Petition"
+        total:
+          type: integer
+        page:
+          type: integer
+
+    PetitionInput:
+      type: object
+      required: [title, description]
+      properties:
+        title:
+          type: string
+          minLength: 5
+        description:
+          type: string
+          minLength: 20
+        campaignId:
+          type: integer
+        targetSignatures:
+          type: integer
+
+    SignatureInput:
+      type: object
+      required: [displayName]
+      properties:
+        displayName:
+          type: string
+        comment:
+          type: string
+
+    # ── POLL SCHEMAS ─────────────────────────────────────────────────────
+    Poll:
+      type: object
+      required: [id, question, options, totalVotes, createdAt]
+      properties:
+        id:
+          type: integer
+        question:
+          type: string
+        campaignId:
+          type: ["integer", "null"]
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/PollOption"
+        totalVotes:
+          type: integer
+        userVotedOptionId:
+          type: ["integer", "null"]
+        endsAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    PollOption:
+      type: object
+      required: [id, text, voteCount, percentage]
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        voteCount:
+          type: integer
+        percentage:
+          type: number
+
+    PollList:
+      type: object
+      required: [polls, total, page]
+      properties:
+        polls:
+          type: array
+          items:
+            $ref: "#/components/schemas/Poll"
+        total:
+          type: integer
+        page:
+          type: integer
+
+    PollInput:
+      type: object
+      required: [question, options]
+      properties:
+        question:
+          type: string
+          minLength: 5
+        campaignId:
+          type: integer
+        options:
+          type: array
+          items:
+            type: string
+          minItems: 2
+        endsAt:
+          type: string
+          format: date-time
+
+    VoteInput:
+      type: object
+      required: [optionId]
+      properties:
+        optionId:
+          type: integer
+
+    # ── COMMENT SCHEMAS ──────────────────────────────────────────────────
+    Comment:
+      type: object
+      required: [id, content, authorName, upvoteCount, createdAt]
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        campaignId:
+          type: ["integer", "null"]
+        petitionId:
+          type: ["integer", "null"]
+        parentId:
+          type: ["integer", "null"]
+        authorId:
+          type: integer
+        authorName:
+          type: string
+        authorAvatarUrl:
+          type: ["string", "null"]
+        upvoteCount:
+          type: integer
+        isUpvoted:
+          type: boolean
+        replies:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+        createdAt:
+          type: string
+          format: date-time
+
+    CommentList:
+      type: object
+      required: [comments, total, page]
+      properties:
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+        total:
+          type: integer
+        page:
+          type: integer
+
+    CommentInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+        campaignId:
+          type: integer
+        petitionId:
+          type: integer
+        parentId:
+          type: integer
+
+    # ── NOTIFICATION SCHEMAS ─────────────────────────────────────────────
+    Notification:
+      type: object
+      required: [id, type, title, message, isRead, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [campaign_update, petition_milestone, poll_created, comment_reply, system]
+        title:
+          type: string
+        message:
+          type: string
+        isRead:
+          type: boolean
+        campaignId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    # ── AI SCHEMAS ───────────────────────────────────────────────────────
+    EmailGenerateInput:
+      type: object
+      required: [concern, recipientType]
+      properties:
+        concern:
+          type: string
+          minLength: 20
+        recipientType:
+          type: string
+          enum: [district_collector, municipality, cm_office, minister, mp_mla, other]
+        campaignId:
+          type: ["integer", "null"]
+        language:
+          type: string
+          enum: [english, hindi, marathi]
+          default: english
+
+    EmailDraft:
+      type: object
+      required: [subject, body, recipientTitle]
+      properties:
+        subject:
+          type: string
+        body:
+          type: string
+        recipientTitle:
+          type: string
+        language:
+          type: string
+
+    LetterGenerateInput:
+      type: object
+      required: [concern, recipientType, senderName]
+      properties:
+        concern:
+          type: string
+          minLength: 20
+        recipientType:
+          type: string
+          enum: [district_collector, municipality, cm_office, minister, mp_mla, other]
+        senderName:
+          type: string
+        senderAddress:
+          type: string
+        campaignId:
+          type: ["integer", "null"]
+        language:
+          type: string
+          enum: [english, hindi, marathi]
+          default: english
+
+    LetterDraft:
+      type: object
+      required: [content, recipientTitle, language]
+      properties:
+        content:
+          type: string
+        recipientTitle:
+          type: string
+        language:
+          type: string
+
+    SummarizeInput:
+      type: object
+      required: [campaignId]
+      properties:
+        campaignId:
+          type: integer
+
+    SummaryResult:
+      type: object
+      required: [summary, keyPoints]
+      properties:
+        summary:
+          type: string
+        keyPoints:
+          type: array
+          items:
+            type: string
+
+    # ── STATS SCHEMAS ────────────────────────────────────────────────────
+    PlatformStats:
+      type: object
+      required: [totalCampaigns, totalCitizens, totalPetitionSigns, totalPolls, activeCampaigns]
+      properties:
+        totalCampaigns:
+          type: integer
+        totalCitizens:
+          type: integer
+        totalPetitionSigns:
+          type: integer
+        totalPolls:
+          type: integer
+        activeCampaigns:
+          type: integer
+        campaignsByCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryCount"
+        recentGrowth:
+          type: number
+
+    DashboardStats:
+      type: object
+      required: [campaignsJoined, petitionsSigned, pollsVoted, commentsPosted]
+      properties:
+        campaignsJoined:
+          type: integer
+        petitionsSigned:
+          type: integer
+        pollsVoted:
+          type: integer
+        commentsPosted:
+          type: integer
+        impactScore:
+          type: integer
+        bookmarkCount:
+          type: integer
+
+    ActivityItem:
+      type: object
+      required: [id, type, title, timestamp]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [joined_campaign, signed_petition, voted_poll, posted_comment, bookmarked]
+        title:
+          type: string
+        description:
+          type: string
+        campaignId:
+          type: ["integer", "null"]
+        timestamp:
+          type: string
+          format: date-time
+
+    CategoryCount:
+      type: object
+      required: [category, count]
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+
+    # ── SHARED ───────────────────────────────────────────────────────────
+    ActionResult:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string

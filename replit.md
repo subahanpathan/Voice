@@ -1,36 +1,55 @@
-# [Project name]
+# JanVoice AI
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+AI-powered civic engagement platform where Indian citizens can join campaigns, sign petitions, vote in polls, and use AI to generate letters and emails to government officials.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/janvoice-ai run dev` — run the frontend (auto-assigned port)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080, proxied at /api)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string, `SESSION_SECRET` — JWT signing secret
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React 19 + Vite, Tailwind CSS, Framer Motion, Wouter, React Query, ShadCN UI
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
+- Auth: JWT (via SESSION_SECRET) + bcryptjs
+- AI: OpenAI (optional, falls back to template drafts if OPENAI_API_KEY not set)
+- Validation: Zod (zod/v4), drizzle-zod
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — OpenAPI spec (single source of truth for all API contracts)
+- `lib/db/src/schema/` — Drizzle ORM table definitions (users, campaigns, petitions, polls, comments, notifications, activity)
+- `artifacts/api-server/src/routes/` — Express route handlers (auth, campaigns, petitions, polls, comments, notifications, stats, users, ai)
+- `artifacts/api-server/src/middlewares/auth.ts` — JWT auth middleware
+- `artifacts/janvoice-ai/src/` — React frontend (pages, components, context)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- JWT stored in localStorage under key `janvoice_token`; Authorization header sent as `Bearer <token>`
+- Auth endpoints use `SESSION_SECRET` env var for signing; falls back to a dev default if not set
+- AI email/letter generation uses OpenAI if `OPENAI_API_KEY` is set; falls back to a professional template otherwise
+- Campaign progress % is computed from petition signatures vs targetSignatures
+- Activity logs and notifications are created on join/sign/vote actions
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Landing page** — hero, features, live stats, campaign highlights, how-it-works, testimonials, FAQ, CTA
+- **Campaigns** — browse by category (education, infrastructure, healthcare, environment, etc.), search, join, bookmark
+- **Petitions** — create and sign digital petitions with signature progress tracking
+- **Polls** — public opinion polls with animated real-time results
+- **Community** — threaded discussions with upvotes
+- **AI Tools** — generate professional emails and official letters in English, Hindi, or Marathi
+- **Dashboard** — personal stats (impact score, campaigns joined, petitions signed), activity feed
+- **Notifications** — real-time in-app campaign updates, petition milestones, system alerts
 
 ## User preferences
 
@@ -38,7 +57,10 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- After any OpenAPI spec change, run `pnpm --filter @workspace/api-spec run codegen` before building
+- `zod.email()` is not available in this workspace's Zod version — use plain `type: string` for email fields in the spec
+- DB schema push: `pnpm --filter @workspace/db run push` (dev only; prod schema managed by Replit publish flow)
+- Never run `pnpm dev` at the workspace root — use workflows or individual filter commands
 
 ## Pointers
 

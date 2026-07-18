@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "JanVoice AI"
+version = "1.0.0"
+id = "artifacts/janvoice-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21745
+
+[services.development]
+run = "pnpm --filter @workspace/janvoice-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/janvoice-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/janvoice-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21745"
+BASE_PATH = "/"

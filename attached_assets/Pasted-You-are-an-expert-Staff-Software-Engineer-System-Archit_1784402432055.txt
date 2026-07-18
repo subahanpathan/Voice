@@ -1,0 +1,763 @@
+You are an expert Staff Software Engineer, System Architect, UI/UX Designer, Database Architect, AI Engineer, DevOps Engineer, and Cybersecurity Engineer. Your task is to build a **production-ready, scalable, and modern full-stack web application** called:
+
+# 🇮🇳 JANVOICE AI
+### "AI-Powered Civic Engagement Platform"
+
+This is NOT a college project. Build it like a real startup product with clean architecture, modern UI, secure backend, and scalable infrastructure.
+
+---
+
+# PROJECT OBJECTIVE
+
+JanVoice AI is a civic engagement platform where citizens can:
+
+- Create an account and verify their identity.
+- Browse and join public campaigns (education, infrastructure, healthcare, environment, public services, etc.).
+- Sign digital petitions.
+- Submit structured feedback.
+- Upload supporting documents and evidence.
+- Record or upload short video testimonies.
+- Participate in public opinion polls.
+- Generate AI-assisted emails and letters based on their own input.
+- Review and approve emails before sending them using their own email client or another transparent workflow.
+- Track campaign progress.
+- View public analytics and dashboards.
+- Receive campaign updates.
+- Participate in moderated community discussions.
+
+The platform must be **generic**, not dedicated to any one political issue or person.
+
+---
+
+# UI / UX DESIGN
+
+Create a world-class premium UI inspired by:
+
+- Apple
+- Stripe
+- Vercel
+- Linear
+- Notion
+
+Design Style:
+
+- Glassmorphism
+- Soft shadows
+- Rounded corners
+- Smooth animations
+- Premium cards
+- Responsive layout
+- Elegant typography
+- Modern dashboards
+- Beautiful spacing
+- Consistent design system
+
+Default Theme:
+
+Dark Mode
+
+Use Framer Motion animations throughout.
+
+---
+
+# PATRIOTIC THEME
+
+The platform should represent India in a professional and respectful way.
+
+Color Palette:
+
+Primary
+- Saffron (#FF9933)
+- White (#FFFFFF)
+- India Green (#138808)
+- Navy Blue (#000080)
+
+Accent
+- Royal Blue
+- Emerald
+- Gold
+
+Background:
+
+- Animated gradient mesh
+- Floating glowing particles
+- Very subtle Ashoka Chakra-inspired circular patterns
+- Subtle tricolor gradients
+- Modern patriotic aesthetic
+- Do NOT overuse flags or political imagery
+
+The homepage should immediately convey trust, unity, civic participation, and innovation.
+
+---
+
+# TECH STACK
+
+Frontend
+
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- ShadCN UI
+- Framer Motion
+- React Hook Form
+- React Query
+- Axios
+- Zod
+- Lucide Icons
+
+Backend
+
+- Node.js
+- Express.js
+- TypeScript
+
+Database
+
+- PostgreSQL
+- Prisma ORM
+
+Authentication
+
+- JWT
+- Refresh Tokens
+- Google OAuth
+- Email Verification
+
+Storage
+
+- Cloudinary or Supabase Storage
+
+AI
+
+- OpenAI API
+- Whisper API
+
+Deployment
+
+Frontend → Vercel
+
+Backend → Railway or Render
+
+Database → PostgreSQL
+
+---
+
+# PROJECT STRUCTURE
+
+Create a proper monorepo.
+
+janvoice-ai/
+
+frontend/
+backend/
+database/
+shared/
+docs/
+assets/
+scripts/
+
+Frontend and backend MUST be completely separated.
+
+Never mix frontend logic inside backend.
+
+Never mix backend logic inside frontend.
+
+---
+
+# FRONTEND STRUCTURE
+
+frontend/src/
+
+app/
+
+components/
+
+features/
+
+layouts/
+
+hooks/
+
+contexts/
+
+services/
+
+utils/
+
+types/
+
+styles/
+
+public/
+
+Every feature must have its own folder.
+
+Reusable components only.
+
+Use feature-based architecture.
+
+---
+
+# BACKEND STRUCTURE
+
+backend/src/
+
+controllers/
+
+routes/
+
+middlewares/
+
+services/
+
+models/
+
+validators/
+
+config/
+
+database/
+
+utils/
+
+types/
+
+logs/
+
+Follow MVC architecture.
+
+REST API.
+
+Proper error handling.
+
+Logging.
+
+Validation.
+
+Role management.
+
+---
+
+# DATABASE
+
+Use Prisma.
+
+Create normalized tables.
+
+Users
+
+Campaigns
+
+Petitions
+
+Comments
+
+Videos
+
+Documents
+
+Notifications
+
+Polls
+
+Votes
+
+Reports
+
+Emails
+
+Letters
+
+AuditLogs
+
+ActivityLogs
+
+AdminLogs
+
+Use foreign keys.
+
+Indexes.
+
+Migrations.
+
+---
+
+# USER ROLES
+
+Guest
+
+Citizen
+
+Volunteer
+
+Moderator
+
+Admin
+
+Super Admin
+
+Role-based permissions everywhere.
+
+---
+
+# LANDING PAGE
+
+Premium Hero Section
+
+Animated background
+
+Navbar
+
+Features
+
+How It Works
+
+Campaign Highlights
+
+Statistics
+
+Testimonials
+
+FAQ
+
+Footer
+
+Call To Action
+
+Beautiful scroll animations.
+
+---
+
+# DASHBOARD
+
+Overview
+
+Campaigns
+
+Petitions
+
+Videos
+
+My Activity
+
+Notifications
+
+Analytics
+
+Profile
+
+Settings
+
+Dark Mode
+
+---
+
+# CAMPAIGN MODULE
+
+Campaign Image
+
+Description
+
+Timeline
+
+Status
+
+Progress Bar
+
+Related Documents
+
+Evidence
+
+Videos
+
+Petition
+
+Discussion
+
+Updates
+
+FAQ
+
+Share
+
+Bookmark
+
+Search
+
+Filter
+
+---
+
+# PETITION SYSTEM
+
+Digital signature
+
+OTP verification
+
+Support count
+
+Comments
+
+Sharing
+
+Progress
+
+Campaign statistics
+
+---
+
+# VIDEO MODULE
+
+Record video
+
+Upload video
+
+Compress video
+
+Thumbnail generation
+
+Speech-to-text
+
+AI summary
+
+Transcript
+
+Storage
+
+Moderation
+
+---
+
+# AI FEATURES
+
+OpenAI Integration
+
+Speech to Text
+
+AI Summarization
+
+AI Translation
+
+Email Generation
+
+Letter Generation
+
+Content Moderation
+
+Duplicate Detection
+
+AI Search
+
+AI Reports
+
+Trend Analysis
+
+---
+
+# EMAIL MODULE
+
+Users write their concerns.
+
+AI generates a professional email draft.
+
+Users review the draft.
+
+Users edit the draft.
+
+Users approve the draft.
+
+The application prepares the email for the user to send through their own email account or another transparent workflow.
+
+Store email history.
+
+Allow PDF export.
+
+---
+
+# LETTER MODULE
+
+Generate
+
+Official Letter
+
+PDF
+
+Print Version
+
+Hindi
+
+English
+
+Marathi
+
+Translation
+
+---
+
+# POLLS
+
+Create polls
+
+Vote
+
+Real-time results
+
+Charts
+
+Participation statistics
+
+---
+
+# COMMUNITY
+
+Discussion forum
+
+Replies
+
+Upvotes
+
+Search
+
+Moderation
+
+Reporting
+
+---
+
+# NOTIFICATIONS
+
+Real-time
+
+Email
+
+In-app
+
+Campaign updates
+
+Announcements
+
+---
+
+# ADMIN PANEL
+
+Campaign Management
+
+User Management
+
+Moderator Management
+
+Video Moderation
+
+Comment Moderation
+
+Reports
+
+Analytics
+
+System Logs
+
+Audit Logs
+
+---
+
+# ANALYTICS
+
+Charts
+
+Participation
+
+Growth
+
+Top Campaigns
+
+Most Active Regions
+
+Daily Users
+
+Weekly Users
+
+Monthly Users
+
+Heatmaps
+
+Export Reports
+
+---
+
+# SECURITY
+
+Helmet
+
+Rate Limiting
+
+JWT
+
+Refresh Tokens
+
+Input Validation
+
+XSS Protection
+
+SQL Injection Protection
+
+CSRF Protection
+
+Secure Cookies
+
+Password Hashing
+
+Audit Logs
+
+CORS
+
+Environment Variables
+
+---
+
+# PERFORMANCE
+
+Lazy Loading
+
+Pagination
+
+Caching
+
+Optimized Images
+
+Virtual Lists
+
+Code Splitting
+
+SEO
+
+---
+
+# ACCESSIBILITY
+
+Keyboard Navigation
+
+ARIA Labels
+
+Screen Reader Support
+
+Responsive Design
+
+---
+
+# CODE QUALITY
+
+Use TypeScript everywhere.
+
+Use SOLID principles.
+
+Use reusable components.
+
+Use reusable APIs.
+
+No duplicate code.
+
+Write clean comments.
+
+Follow ESLint.
+
+Follow Prettier.
+
+No placeholder code.
+
+No TODOs.
+
+Everything should be production-ready.
+
+---
+
+# API DOCUMENTATION
+
+Generate Swagger API documentation.
+
+---
+
+# TESTING
+
+Unit Testing
+
+Integration Testing
+
+API Testing
+
+Validation Testing
+
+---
+
+# DEVELOPMENT STRATEGY
+
+DO NOT generate the whole project at once.
+
+Generate one phase at a time.
+
+Each phase must be fully working before moving to the next.
+
+Phase 1
+Project setup
+
+Phase 2
+Folder structure
+
+Phase 3
+Authentication
+
+Phase 4
+Landing Page
+
+Phase 5
+Dashboard
+
+Phase 6
+Campaign Module
+
+Phase 7
+Petition Module
+
+Phase 8
+Video Module
+
+Phase 9
+AI Integration
+
+Phase 10
+Email & Letter Module
+
+Phase 11
+Community Module
+
+Phase 12
+Notifications
+
+Phase 13
+Admin Panel
+
+Phase 14
+Analytics
+
+Phase 15
+Testing
+
+Phase 16
+Deployment
+
+After completing each phase:
+
+- Ensure there are no TypeScript errors.
+- Ensure there are no ESLint errors.
+- Ensure the application builds successfully.
+- Ensure backend APIs work correctly.
+- Ensure frontend is responsive.
+- Ensure code is production-ready.
+
+Never skip steps.
+
+Always explain what files are being created and why.
+
+Always maintain a clean separation between frontend and backend.
+
+Build this application to startup-level quality, with scalability, maintainability, security, accessibility, and excellent UI/UX as the highest priorities.
